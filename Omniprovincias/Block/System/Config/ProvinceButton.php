@@ -32,7 +32,7 @@ class ProvinceButton extends Field
 
     public function getCustomUrl()
     {
-        return $this->getUrl('router/controller/action');
+        return $this->getUrl('omniprovincias/system_config/provinceButton');
     }
 
     public function getButtonHtml()
