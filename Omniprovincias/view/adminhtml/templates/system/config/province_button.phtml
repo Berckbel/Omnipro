@@ -1,4 +1,19 @@
 <?php
-    $controller = $block->getCustomUrl();
-    echo $block->getButtonHtml();
+$controller = $block->getCustomUrl();
+echo $block->getButtonHtml();
 ?>
+
+<script type="text/javascript">
+    (function() {
+        require(["jquery"], function($) {
+            $(document).ready(function($) {
+                $("#row_omniprovincias_provinces_province_button").hide();
+                var country_select = $('#omniprovincias_provinces_country')
+                country_select.change(function() {
+                    console.log(country_select.val());
+                    $.get(`<?= $block->getCustomUrl(); ?>country/${country_select.val()}`)
+                })
+            });
+        });
+    })();
+</script>
