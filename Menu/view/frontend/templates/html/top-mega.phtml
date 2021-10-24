@@ -8,24 +8,27 @@
             'jquery',
             'menumodernizr'
         ], function ($) {
-            $('.menu > ul > li:has( > ul)').addClass('menu-dropdown-icon');
-            $('.menu > ul > li > ul:not(:has(ul))').addClass('normal-sub');
-            $(".menu > ul").before("<a href=\"#\" class=\"menu-mobile\">Navigation</a>");
-            $(".menu > ul > li").hover(function (e) {
-                if ($(window).width() > 943) {
-                    $(this).children("ul").stop(true, false).fadeToggle(150);
+            $(document).ready(function($) {
+                $('.menu > ul > li:has( > ul)').addClass('menu-dropdown-icon');
+                $('.menu > ul > li > ul:not(:has(ul))').addClass('normal-sub');
+                $(".menu > ul").before("<a href=\"#\" class=\"menu-mobile\">Navigation</a>");
+                $(".menu > ul > li").hover(function (e) {
+                    if ($(window).width() > 943) {
+                        $(this).children("ul").stop(true, false).fadeToggle(150);
+                        e.preventDefault();
+                    }
+                });            
+                $(".menu > ul > li").click(function () {
+                    if ($(window).width() <= 943) {
+                        $(this).children("ul").fadeToggle(150);
+                    }
+                });            
+                $(".menu-mobile").click(function (e) {
+                    $(".menu > ul").toggleClass('show-on-mobile');
                     e.preventDefault();
-                }
-            });            
-            $(".menu > ul > li").click(function () {
-                if ($(window).width() <= 943) {
-                    $(this).children("ul").fadeToggle(150);
-                }
-            });            
-            $(".menu-mobile").click(function (e) {
-                $(".menu > ul").toggleClass('show-on-mobile');
-                e.preventDefault();
-            });
+                });
+                console.log("test");
+            })
         });
     </script>
     <?php
@@ -46,7 +49,7 @@
             <?php /* @escapeNotVerified */ echo $_menu; ?>
         </ul>
     </nav>
-
+    
 <?php else : ?>
 
 <nav class="navigation" data-action="navigation">
