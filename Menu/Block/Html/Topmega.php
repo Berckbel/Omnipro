@@ -452,9 +452,7 @@ class Topmega extends Topmenu {
             return parent::getHtml($outermostClass, $childrenWrapClass, $limit);
         }
     }
-
     public function allowExtension() {
         return $this->dataHelper->allowExtension();
     }
-
 }

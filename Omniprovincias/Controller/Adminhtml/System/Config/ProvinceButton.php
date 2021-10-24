@@ -2,6 +2,8 @@
 
 namespace Omnipro\Omniprovincias\Controller\Adminhtml\System\Config;
 
+use Magento\Directory\Model\RegionFactory;
+use Omnipro\Omniprovincias\Helper\ConfigHelper;
 use Psr\Log\LoggerInterface;
 
 class ProvinceButton extends \Magento\Backend\App\Action
@@ -12,6 +14,8 @@ class ProvinceButton extends \Magento\Backend\App\Action
 
     protected $request;
     protected $curl;
+    protected $configHelper;
+    protected $regionFactory;
     protected $logger;
 
     /**
@@ -27,11 +31,15 @@ class ProvinceButton extends \Magento\Backend\App\Action
         \Magento\Framework\View\Result\PageFactory $pageFactory,
         \Magento\Framework\App\Request\Http $request,
         \Magento\Framework\HTTP\Client\Curl $curl,
+        ConfigHelper $configHelper,
+        RegionFactory $regionFactory,
         LoggerInterface $logger
     ) {
         $this->_pageFactory = $pageFactory;
         $this->request = $request;
         $this->curl = $curl;
+        $this->configHelper = $configHelper;
+        $this->regionFactory = $regionFactory;
         $this->logger = $logger;
         return parent::__construct($context);
     }
@@ -45,14 +53,13 @@ class ProvinceButton extends \Magento\Backend\App\Action
     {
         /** @var \Magento\Framework\View\Result\Page $resultPage */
         $resultPage = $this->_pageFactory->create();
-        // $resultPage->setActiveMenu(static::ADMIN_RESOURCE);
-        // $resultPage->addBreadcrumb(__(static::PAGE_TITLE), __(static::PAGE_TITLE));
         $resultPage->getConfig()->getTitle()->prepend(__(static::PAGE_TITLE));
         $countryId = $this->request->getParam('country');
 
-        $data = $this->getRegionsByCountry($countryId);
+        $regions = $this->getRegionsByCountry($countryId);
+        $this->setRegionsByCountry($regions);
 
-        $this->logger->debug('Llego al consola los datos', ['object' => $data[0]]);
+        $this->logger->debug('Llego a la consola los datos', ['object' => $regions]);
         return $resultPage;
     }
 
@@ -67,14 +74,37 @@ class ProvinceButton extends \Magento\Backend\App\Action
     }
 
 
-    public function getRegionsByCountry($countryId){
-        $uri = "https://spott.p.rapidapi.com/places?country=" . $countryId;
+    public function getRegionsByCountry($countryId)
+    {
+        $resultRegions = [];
+        $uri = "https://spott.p.rapidapi.com/places?country=" . $countryId . "&type=ADMIN_DIVISION_1";
         $headers = [
-            'x-rapidapi-host'=>'spott.p.rapidapi.com',
-            'x-rapidapi-key'=>'03fd18e644msh006192363c01dacp1a8d13jsn8cdd518ebf55'
+            'x-rapidapi-host' => 'spott.p.rapidapi.com',
+            'x-rapidapi-key' => $this->configHelper->getAPIKey()
         ];
         $this->curl->setHeaders($headers);
         $this->curl->get($uri);
-        return json_decode($this->curl->getBody(), true);
+        $countryRegions = json_decode($this->curl->getBody(), true);
+        foreach ($countryRegions as $region) {
+            $bind = [
+                'country_id' => $countryId,
+                'code' => $region['id'],
+                'default_name' => $region['name']
+            ];
+            $resultRegions[] = $bind;
+        }
+        return $resultRegions;
+    }
+
+    public function setRegionsByCountry($regions)
+    {
+        foreach ($regions as $region) {
+            $this->logger->debug('region: ->', ['object' => $region]);
+            $regionFactory = $this->regionFactory->create();
+            $regionFactory->setCountryId($region['country_id']);
+            $regionFactory->setCode($region['code']);
+            $regionFactory->setDefaultName($region['default_name']);
+            $regionFactory->save();
+        }
     }
 }
