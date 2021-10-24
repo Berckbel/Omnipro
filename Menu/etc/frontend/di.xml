@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+    <type name="Magento\Catalog\Model\ResourceModel\Category\Collection">
+        <plugin name="megamenu_push_collection_after" type="Omnipro\Menu\Plugin\AddAttributeToSelect"/>
+    </type>
+    <preference for="Magento\Catalog\Plugin\Block\Topmenu" type="Omnipro\Menu\Plugin\AddAttributeToSelect" />
+</config>
