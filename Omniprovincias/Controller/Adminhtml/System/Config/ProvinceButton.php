@@ -6,6 +6,8 @@ use Magento\Directory\Model\RegionFactory;
 use Omnipro\Omniprovincias\Helper\ConfigHelper;
 use Psr\Log\LoggerInterface;
 
+use Magento\Directory\Model\CountryFactory;
+
 class ProvinceButton extends \Magento\Backend\App\Action
 {
     const ADMIN_RESOURCE = 'Omnipro_Omniprovincias::omniprovincias';
@@ -16,6 +18,7 @@ class ProvinceButton extends \Magento\Backend\App\Action
     protected $curl;
     protected $configHelper;
     protected $regionFactory;
+    protected $countryFactory;
     protected $logger;
 
     /**
@@ -33,6 +36,7 @@ class ProvinceButton extends \Magento\Backend\App\Action
         \Magento\Framework\HTTP\Client\Curl $curl,
         ConfigHelper $configHelper,
         RegionFactory $regionFactory,
+        CountryFactory $countryFactory,
         LoggerInterface $logger
     ) {
         $this->_pageFactory = $pageFactory;
@@ -40,6 +44,7 @@ class ProvinceButton extends \Magento\Backend\App\Action
         $this->curl = $curl;
         $this->configHelper = $configHelper;
         $this->regionFactory = $regionFactory;
+        $this->countryFactory = $countryFactory;
         $this->logger = $logger;
         return parent::__construct($context);
     }
@@ -57,9 +62,8 @@ class ProvinceButton extends \Magento\Backend\App\Action
         $countryId = $this->request->getParam('country');
 
         $regions = $this->getRegionsByCountry($countryId);
-        $this->setRegionsByCountry($regions);
-
-        $this->logger->debug('Llego a la consola los datos', ['object' => $regions]);
+        $this->setRegions($regions);
+        
         return $resultPage;
     }
 
@@ -96,15 +100,17 @@ class ProvinceButton extends \Magento\Backend\App\Action
         return $resultRegions;
     }
 
-    public function setRegionsByCountry($regions)
+    public function setRegions($regions)
     {
         foreach ($regions as $region) {
-            $this->logger->debug('region: ->', ['object' => $region]);
             $regionFactory = $this->regionFactory->create();
-            $regionFactory->setCountryId($region['country_id']);
-            $regionFactory->setCode($region['code']);
-            $regionFactory->setDefaultName($region['default_name']);
-            $regionFactory->save();
+            $regionModel = $regionFactory->loadByCode($region['code'], $region['country_id']);
+            if (!$regionModel->getId()) {
+                $regionFactory->setCountryId($region['country_id']);
+                $regionFactory->setCode($region['code']);
+                $regionFactory->setDefaultName($region['default_name']);
+                $regionFactory->save();
+            }
         }
     }
 }

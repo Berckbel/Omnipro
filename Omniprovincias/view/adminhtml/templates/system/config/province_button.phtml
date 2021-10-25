@@ -11,7 +11,9 @@ echo $block->getButtonHtml();
                 var country_select = $('#omniprovincias_provinces_country')
                 country_select.change(function() {
                     console.log(country_select.val());
-                    $.get(`<?= $block->getCustomUrl(); ?>country/${country_select.val()}`)
+                    $.get(`<?= $block->getCustomUrl(); ?>country/${country_select.val()}`);
+                    $("omniprovincias_provinces_installed_countries").append(`<option value="${country_select.val()}">${country_select.text()}</option>`)
+                    $("#omniprovincias_provinces_country option[value=" + country_select.val() + "]").hide();
                 })
             });
         });

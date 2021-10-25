@@ -28,7 +28,7 @@
                 <label>Provinces Configuration</label>
                 <field id="country" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Select Country</label>
-                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\CountryOptions</source_model>
                 </field>
                 <field id="province_button" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Update Provinces</label>
@@ -36,6 +36,7 @@
                 </field>
                 <field id="installed_countries" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Installed Countries</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\InstalledCountries</source_model>
                 </field>
                 <depends>
                     <field id="omniprovincias/general/enable">1</field>
