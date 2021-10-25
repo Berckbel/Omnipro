@@ -134,6 +134,7 @@ class Topmega extends Topmenu {
 
             $category = "";
             if ($childLevel == 0) {
+                $html .= '<p>'. $childLevel.'</p>';
                 $html .= '<ul>';
                 $category = $this->coreRegistry->registry('current_categry_top_level');
                 if ($category != null) {
@@ -156,7 +157,7 @@ class Topmega extends Topmenu {
                         }
                     }
                 }
-                if (!$category->getDisabledChildren() && $childLevel == 0) {
+                if (!$category->getDisabledChildren()) {
                     $html .= $this->_getHtml($child, $childrenWrapClass, $limit, $colStops);
                 }
 
@@ -175,9 +176,57 @@ class Topmega extends Topmenu {
                         }
                     }
                 }
-                $html .= '<div class="bottomstatic" ></div>';
+                // $html .= '<div class="bottomstatic" ></div>';
                 $html .= '</ul>';
-            } else {
+            } 
+            elseif($childLevel == 1) {
+                $html .= '<p>'. $childLevel.'</p>';                
+                $category = $this->coreRegistry->registry('current_categry_top_level');
+                if ($category != null) {
+                    if ($category->getUseStaticBlock()) {
+
+                        if ($category->getUseStaticBlockTop() && $category->getStaticBlockTopValue() != "") {
+                            $html .= '<div class="topstatic" >';
+                            $html .= $this->getBlockHtml($category->getStaticBlockTopValue());
+                            $html .= '</div>';
+                        }
+                        if ($category->getUseStaticBlockLeft() && $category->getStaticBlockLeftValue() != "") {
+                            $html .= '<div class="leftstatic" >';
+                            $html .= $this->getBlockHtml($category->getStaticBlockLeftValue());
+                            $html .= '</div>';
+                        }
+                    }
+                    if ($category->getUseLabel()) {
+                        if ($category->getLabelValue() != "") {
+                            $child->setData('name', $category->getLabelValue());
+                        }
+                    }
+                }
+                if (!$category->getDisabledChildren()) {
+                    $html .= '<ul>';
+                    $html .= $this->_getHtml($child, $childrenWrapClass, $limit, $colStops);
+                    $html .= '</ul>';
+                }
+
+                if ($category != null) {
+                    if ($category->getUseStaticBlock()) {
+                        if ($category->getUseStaticBlockRight() && $category->getStaticBlockRightValue() != "") {
+                            $html .= '<div class="rightstatic" >';
+                            $html .= $this->getBlockHtml($category->getStaticBlockRightValue());
+                            $html .= '</div>';
+                        }
+
+                        if ($category->getUseStaticBlockBottom() && $category->getStaticBlockBottomValue() != "") {
+                            $html .= '<div class="bottomstatic" >';
+                            $html .= $this->getBlockHtml($category->getStaticBlockBottomValue());
+                            $html .= '</div>';
+                        }
+                    }
+                }
+                // $html .= '<div class="bottomstatic" ></div>';
+                
+            }
+            else {
                 $html .= '<ul>';
                 $html .= $this->_getHtml($child, $childrenWrapClass, $limit, $colStops);
                 $html .= '</ul>';
@@ -285,6 +334,7 @@ class Topmega extends Topmenu {
             $html .= '<li ' . $this->_getRenderedMenuItemAttributes($child) . '>';
             if ($child->getCategoryIsLink()) {
                 $html .= '<a href="' . $child->getUrl() . '" ' . $outermostClassCode . '>';
+                // $html .= '<img src="https://app.final.test/media/wysiwyg/Logos_Omni.pro-15.png" alt="Left image" width="400px" />';
             }else{
                 $html .= '<a ' . $outermostClassCode . '>';
             }
@@ -295,7 +345,7 @@ class Topmega extends Topmenu {
                 $html .= '</a>';
             
 
-            $html .= $this->_addSubMenu(
+            $html .= $this->_addSubMenu2(
                 $child,
                 $childLevel,
                 $childrenWrapClass,

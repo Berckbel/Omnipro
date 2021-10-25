@@ -2,68 +2,84 @@
 
 namespace Omnipro\Omniprovincias\Controller\Adminhtml\System\Config;
 
+use Exception;
+use Magento\Backend\App\Action;
+use Magento\Backend\App\Action\Context;
 use Magento\Directory\Model\RegionFactory;
+use Magento\Framework\App\Request\Http;
+use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\View\Result\Page;
+use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Message\ManagerInterface;
+use Magento\Directory\Model\CountryFactory;
 use Omnipro\Omniprovincias\Helper\ConfigHelper;
 use Psr\Log\LoggerInterface;
 
-use Magento\Directory\Model\CountryFactory;
-
-class ProvinceButton extends \Magento\Backend\App\Action
+class ProvinceButton extends Action
 {
     const ADMIN_RESOURCE = 'Omnipro_Omniprovincias::omniprovincias';
 
     const PAGE_TITLE = 'Page Title';
 
-    protected $request;
-    protected $curl;
-    protected $configHelper;
-    protected $regionFactory;
-    protected $countryFactory;
-    protected $logger;
+    protected $_request;
+    protected Curl $_curl;
+    protected ConfigHelper $_configHelper;
+    protected RegionFactory $_regionFactory;
+    protected CountryFactory $_countryFactory;
+    protected LoggerInterface $_logger;
+    protected PageFactory $_pageFactory;
+    protected ManagerInterface $_messageManager;
 
     /**
-     * @var \Magento\Framework\View\Result\PageFactory
-     */
-    protected $_pageFactory;
-
-    /**
-     * @param \Magento\Backend\App\Action\Context $context
+     * @param Context $context
+     * @param PageFactory $pageFactory
+     * @param Http $request
+     * @param Curl $curl
+     * @param ConfigHelper $configHelper
+     * @param RegionFactory $regionFactory
+     * @param CountryFactory $countryFactory
+     * @param ManagerInterface $messageManager
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        \Magento\Backend\App\Action\Context $context,
-        \Magento\Framework\View\Result\PageFactory $pageFactory,
-        \Magento\Framework\App\Request\Http $request,
-        \Magento\Framework\HTTP\Client\Curl $curl,
-        ConfigHelper $configHelper,
-        RegionFactory $regionFactory,
-        CountryFactory $countryFactory,
-        LoggerInterface $logger
-    ) {
+        Context          $context,
+        PageFactory      $pageFactory,
+        Http             $request,
+        Curl             $curl,
+        ConfigHelper     $configHelper,
+        RegionFactory    $regionFactory,
+        CountryFactory   $countryFactory,
+        ManagerInterface $messageManager,
+        LoggerInterface  $logger
+    )
+    {
         $this->_pageFactory = $pageFactory;
-        $this->request = $request;
-        $this->curl = $curl;
-        $this->configHelper = $configHelper;
-        $this->regionFactory = $regionFactory;
-        $this->countryFactory = $countryFactory;
-        $this->logger = $logger;
+        $this->_request = $request;
+        $this->_curl = $curl;
+        $this->_configHelper = $configHelper;
+        $this->_regionFactory = $regionFactory;
+        $this->_countryFactory = $countryFactory;
+        $this->_messageManager = $messageManager;
+        $this->_logger = $logger;
         return parent::__construct($context);
     }
 
     /**
      * Index action
      *
-     * @return \Magento\Framework\View\Result\Page
+     * @return Page
+     * @throws Exception
      */
-    public function execute()
+    public function execute(): Page
     {
-        /** @var \Magento\Framework\View\Result\Page $resultPage */
         $resultPage = $this->_pageFactory->create();
         $resultPage->getConfig()->getTitle()->prepend(__(static::PAGE_TITLE));
-        $countryId = $this->request->getParam('country');
+        $countryId = $this->_request->getParam('country');
 
         $regions = $this->getRegionsByCountry($countryId);
         $this->setRegions($regions);
-        
+
+        $this->_messageManager->addSuccessMessage(__("Regions have been loaded successfully."));
         return $resultPage;
     }
 
@@ -72,23 +88,27 @@ class ProvinceButton extends \Magento\Backend\App\Action
      *
      * @return bool
      */
-    protected function _isAllowed()
+    protected function _isAllowed(): bool
     {
         return $this->_authorization->isAllowed(static::ADMIN_RESOURCE);
     }
 
-
-    public function getRegionsByCountry($countryId)
+    /**
+     * @param string $countryId
+     * @return array
+     */
+    public function getRegionsByCountry(string $countryId): array
     {
         $resultRegions = [];
         $uri = "https://spott.p.rapidapi.com/places?country=" . $countryId . "&type=ADMIN_DIVISION_1";
         $headers = [
             'x-rapidapi-host' => 'spott.p.rapidapi.com',
-            'x-rapidapi-key' => $this->configHelper->getAPIKey()
+            'x-rapidapi-key' => $this->_configHelper->getAPIKey()
         ];
-        $this->curl->setHeaders($headers);
-        $this->curl->get($uri);
-        $countryRegions = json_decode($this->curl->getBody(), true);
+        $this->_curl->setHeaders($headers);
+        $this->_curl->get($uri);
+        $countryRegions = json_decode($this->_curl->getBody(), true);
+
         foreach ($countryRegions as $region) {
             $bind = [
                 'country_id' => $countryId,
@@ -97,13 +117,18 @@ class ProvinceButton extends \Magento\Backend\App\Action
             ];
             $resultRegions[] = $bind;
         }
+
         return $resultRegions;
     }
 
-    public function setRegions($regions)
+    /**
+     * @param array $regions
+     * @throws Exception
+     */
+    public function setRegions(array $regions)
     {
         foreach ($regions as $region) {
-            $regionFactory = $this->regionFactory->create();
+            $regionFactory = $this->_regionFactory->create();
             $regionModel = $regionFactory->loadByCode($region['code'], $region['country_id']);
             if (!$regionModel->getId()) {
                 $regionFactory->setCountryId($region['country_id']);

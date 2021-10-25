@@ -16,8 +16,8 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="api_key" translate="label" type="obscure" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Api key</label>
-                    <comment>insert api key for www.rapidapi.com</comment>
+                    <label>API Key</label>
+                    <comment><![CDATA[Insert API key for <a href="https://rapidapi.com/Spott/api/spott/" target="_blank">RapidAPI</a>]]></comment>
                     <validate>required-entry no-whitespace</validate>
                     <depends>
                         <field id="enable">1</field>
