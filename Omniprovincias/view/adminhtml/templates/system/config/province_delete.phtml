@@ -1,0 +1,77 @@
+<?php
+
+use Omnipro\Omniprovincias\Block\System\Config\ProvinceDelete;
+
+/** @var ProvinceDelete $block */
+
+$controller = $block->getCustomUrl();
+echo $block->getButtonHtml();
+?>
+
+<div id="modal_parent_delete_region"></div>
+
+<script type="text/javascript">
+    (function() {
+        require(["jquery", "Magento_Ui/js/modal/modal"], function($, modal) {
+            $(document).ready(function($) {
+                var delete_button = $("#province_delete");
+                $(delete_button).on('click', function(e) {
+                    var selected_country = $('#omniprovincias_provinces_installed_countries option:selected');
+
+                    if (selected_country.val()) {
+
+                        $.get(`<?= $block->getCustomUrl(); ?>country/${selected_country.val()}`);
+
+                        addedRegion($("#omniprovincias_provinces_installed_countries option:selected").text(), country_select.val());
+                        removedRegion();
+
+                        createModal({
+                            type: 'popup',
+                            responsive: true,
+                            innerScroll: true,
+                            buttons: [{
+                                text: $.mage.__('Continue'),
+                                class: 'regionsLoaded',
+                                click: function() {
+                                    this.closeModal();
+                                }
+                            }]
+                        }, modal, "#modal_parent_delete_region");
+                    }
+                })
+            });
+
+            /**
+             * Add country to the list of countries that have regions.
+             * @param {string} text
+             * @param {string} value
+             */
+            function addedRegion(text, value) {
+                var element = document.getElementById('omniprovincias_provinces_installed_countries');
+                var div = $('#modal_parent_delete_region');
+                div.append(document.createTextNode(`Regions for ${text} have been deleted successfully.`))
+            }
+
+            /**
+             * Remove country from the list of countries without regions.
+             * @return {boolean}
+             */
+            function removedRegion() {
+                var element = document.getElementById('omniprovincias_provinces_country');
+                element.remove(element.selectedIndex);
+                return true;
+            }
+
+            /**
+             * Create modal with custom options
+             * @param {object} options Options for modal from Magento modal
+             * @param modal Modal default type from Magento
+             * @param {string} parent Id or class of the parent container
+             */
+            function createModal(options = {}, modal, parent) {
+                modal(options, $(parent));
+                $(parent).modal("openModal");
+            }
+        });
+    })();
+</script>
