@@ -1,4 +1,5 @@
 <?php
+
 namespace Omnipro\Menu\Block\Html;
 
 use Magento\Framework\View\Element\Template;
@@ -6,13 +7,17 @@ use Magento\Framework\Data\TreeFactory;
 use Magento\Framework\Data\Tree\NodeFactory;
 use Magento\Theme\Block\Html\Topmenu;
 use Magento\Catalog\Model\CategoryFactory;
+use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\Registry;
+use Psr\Log\LoggerInterface;
 
 /**
  * Html page top menu block
  */
-class Topmega extends Topmenu {
 
+class Topmega extends Topmenu
+{
+    protected $logger;
     /**
      * Cache identities
      *
@@ -66,9 +71,19 @@ class Topmega extends Topmenu {
     protected $coreRegistry = null;
 
     /**
-     * @var \Omnipro\CategoriesUrl\Helper\Data
+     * @var \Bootcamp\CategoriesUrl\Helper\Data
      */
     protected $dataHelper;
+
+    /**
+     * @param \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory
+     */
+    private $collectionFactory;
+
+    /**
+     * @param \Magento\Cms\Block\Block
+     */
+    private $block;
 
     /**
      * @param Template\Context $context
@@ -77,7 +92,19 @@ class Topmega extends Topmenu {
      * @param array $data
      */
     public function __construct(
-    Template\Context $context, NodeFactory $nodeFactory, TreeFactory $treeFactory, CategoryFactory $categoryFactory, \Magento\Cms\Model\Template\FilterProvider $filterProvider, \Magento\Store\Model\StoreManagerInterface $storeManager, \Magento\Cms\Model\BlockFactory $blockFactory, Registry $registry, \Omnipro\Menu\Helper\Data $dataHelper, array $data = []
+        Template\Context $context,
+        NodeFactory $nodeFactory,
+        TreeFactory $treeFactory,
+        CategoryFactory $categoryFactory,
+        \Magento\Cms\Model\Template\FilterProvider $filterProvider,
+        \Magento\Store\Model\StoreManagerInterface $storeManager,
+        \Magento\Cms\Model\BlockFactory $blockFactory,
+        Registry $registry,
+        \Omnipro\Menu\Helper\Data $dataHelper,
+        array $data = [],
+        LoggerInterface $logger,
+        \Magento\Catalog\Model\ResourceModel\Category\CollectionFactory $collectionFactory,
+        \Magento\Cms\Block\Block $block
     ) {
         parent::__construct($context, $nodeFactory, $treeFactory, $data);
         $this->categoryFactory = $categoryFactory;
@@ -87,6 +114,9 @@ class Topmega extends Topmenu {
         $this->coreRegistry = $registry;
         $this->dataHelper = $dataHelper;
         $this->_menu = $this->getMenu();
+        $this->logger = $logger;
+        $this->collectionFactory = $collectionFactory;
+        $this->block = $block;
     }
 
     /**
@@ -94,7 +124,8 @@ class Topmega extends Topmenu {
      *
      * @return string
      */
-    public function getBlockHtml($id) {
+    public function getBlockHtml($id)
+    {
         $blockId = $id;
         $html = '';
         if ($blockId) {
@@ -118,7 +149,8 @@ class Topmega extends Topmenu {
      * @param int $limit
      * @return string HTML code
      */
-    protected function _addSubMenu2($child, $childLevel, $childrenWrapClass, $limit) {
+    protected function _addSubMenu($child, $childLevel, $childrenWrapClass, $limit)
+    {
 
         if ($this->dataHelper->allowExtension()) {
             $html = '';
@@ -128,13 +160,10 @@ class Topmega extends Topmenu {
 
             $colStops = null;
             if ($childLevel == 0 && $limit) {
-                $colStops = $this->_columnBrake($child->getChildren(), $limit);
             }
-
 
             $category = "";
             if ($childLevel == 0) {
-                $html .= '<p>'. $childLevel.'</p>';
                 $html .= '<ul>';
                 $category = $this->coreRegistry->registry('current_categry_top_level');
                 if ($category != null) {
@@ -179,29 +208,19 @@ class Topmega extends Topmenu {
                 // $html .= '<div class="bottomstatic" ></div>';
                 $html .= '</ul>';
             } 
-            elseif($childLevel == 1) {
-                $html .= '<p>'. $childLevel.'</p>';                
+            elseif ($childLevel == 1) {
                 $category = $this->coreRegistry->registry('current_categry_top_level');
-                if ($category != null) {
-                    if ($category->getUseStaticBlock()) {
-
-                        if ($category->getUseStaticBlockTop() && $category->getStaticBlockTopValue() != "") {
-                            $html .= '<div class="topstatic" >';
-                            $html .= $this->getBlockHtml($category->getStaticBlockTopValue());
-                            $html .= '</div>';
-                        }
-                        if ($category->getUseStaticBlockLeft() && $category->getStaticBlockLeftValue() != "") {
-                            $html .= '<div class="leftstatic" >';
-                            $html .= $this->getBlockHtml($category->getStaticBlockLeftValue());
-                            $html .= '</div>';
-                        }
-                    }
-                    if ($category->getUseLabel()) {
-                        if ($category->getLabelValue() != "") {
-                            $child->setData('name', $category->getLabelValue());
-                        }
-                    }
+                $subCategories = $category->getChildrenCategories();
+                foreach ($subCategories as $subCategory) {
+                    $this->logger->debug($subCategory->getStaticBlockTopValue());
+                    $this->logger->debug($subCategory->getName());
+                    $this->logger->debug($this->getblocks($subCategory->getId()));
+                    $this->logger->debug($this->getCmsblock($this->getblocks($subCategory->getId())));
+                    $html .= '<div class="topstatic" >';
+                    $html .= $this->getCmsblock($this->getblocks($subCategory->getId()));
+                    $html .= '</div>';
                 }
+
                 if (!$category->getDisabledChildren()) {
                     $html .= '<ul>';
                     $html .= $this->_getHtml($child, $childrenWrapClass, $limit, $colStops);
@@ -224,9 +243,8 @@ class Topmega extends Topmenu {
                     }
                 }
                 // $html .= '<div class="bottomstatic" ></div>';
-                
-            }
-            else {
+
+            } else {
                 $html .= '<ul>';
                 $html .= $this->_getHtml($child, $childrenWrapClass, $limit, $colStops);
                 $html .= '</ul>';
@@ -243,7 +261,8 @@ class Topmega extends Topmenu {
      * @param \Magento\Framework\Data\Tree\Node $item
      * @return array
      */
-    protected function _getMenuItemClasses(\Magento\Framework\Data\Tree\Node $item) {
+    protected function _getMenuItemClasses(\Magento\Framework\Data\Tree\Node $item)
+    {
 
         $classes = [];
         $level = 'level' . $item->getLevel();
@@ -277,13 +296,13 @@ class Topmega extends Topmenu {
 
         if ($level == 'level1' && count($positionArray) == 3) {
             $category = $this->coreRegistry->registry('current_categry_top_level');
-            if(!is_null($category)){
-               $classes[] = $category->getLevelColumnCount();
+            if (!is_null($category)) {
+                $classes[] = $category->getLevelColumnCount();
             }
         }
         return $classes;
     }
-    
+
     /**
      * Recursively generates top menu html from data that is specified in $menuTree
      *
@@ -296,9 +315,12 @@ class Topmega extends Topmenu {
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
-    
+
     protected function _getHtml(
-    \Magento\Framework\Data\Tree\Node $menuTree, $childrenWrapClass, $limit, $colBrakes = []
+        \Magento\Framework\Data\Tree\Node $menuTree,
+        $childrenWrapClass,
+        $limit,
+        $colBrakes = []
     ) {
         $html = '';
 
@@ -326,26 +348,26 @@ class Topmega extends Topmenu {
                 $outermostClassCode = ' class="' . $outermostClass . '" ';
                 $child->setClass($outermostClass);
             }
-            if(is_array($colBrakes) || is_object($colBrakes)){
-            if (count($colBrakes) && $colBrakes[$counter]['colbrake']) {
-                $html .= '</ul></li><li class="column"><ul>';
-            }
+            if (is_array($colBrakes) || is_object($colBrakes)) {
+                if (count($colBrakes) && $colBrakes[$counter]['colbrake']) {
+                    $html .= '</ul></li><li class="column"><ul>';
+                }
             }
             $html .= '<li ' . $this->_getRenderedMenuItemAttributes($child) . '>';
             if ($child->getCategoryIsLink()) {
                 $html .= '<a href="' . $child->getUrl() . '" ' . $outermostClassCode . '>';
                 // $html .= '<img src="https://app.final.test/media/wysiwyg/Logos_Omni.pro-15.png" alt="Left image" width="400px" />';
-            }else{
+            } else {
                 $html .= '<a ' . $outermostClassCode . '>';
             }
             $html .= '<span>' . $this->escapeHtml(
-                            $child->getName()
-                    ) . '</span>';
+                $child->getName()
+            ) . '</span>';
 
-                $html .= '</a>';
-            
+            $html .= '</a>';
 
-            $html .= $this->_addSubMenu2(
+
+            $html .= $this->_addSubMenu(
                 $child,
                 $childLevel,
                 $childrenWrapClass,
@@ -354,10 +376,10 @@ class Topmega extends Topmenu {
             $itemPosition++;
             $counter++;
         }
-        if(is_array($colBrakes) || is_object($colBrakes)){
-        if (count($colBrakes) && $limit) {
-            $html = '<li class="column"><ul>' . $html . '</ul></li>';
-        }
+        if (is_array($colBrakes) || is_object($colBrakes)) {
+            if (count($colBrakes) && $limit) {
+                $html = '<li class="column"><ul>' . $html . '</ul></li>';
+            }
         }
         return $html;
     }
@@ -376,7 +398,10 @@ class Topmega extends Topmenu {
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     protected function _getHtml2(
-    \Magento\Framework\Data\Tree\Node $menuTree, $childrenWrapClass, $limit, $colBrakes = []
+        \Magento\Framework\Data\Tree\Node $menuTree,
+        $childrenWrapClass,
+        $limit,
+        $colBrakes = []
     ) {
         if ($this->dataHelper->allowExtension()) {
             $html = '';
@@ -411,14 +436,16 @@ class Topmega extends Topmenu {
                         $id = $arrayId[2];
                         $category = $this->categoryFactory->create();
                         $category->load($id);
+                        $childrenCategoryIds = $category->getChildren($id);
+                        // $this->logger->debug("Estas son las categoria", ["llave" => $childrenCategoryIds]);
                         $this->coreRegistry->unregister('current_categry_top_level');
                         $this->coreRegistry->register('current_categry_top_level', $category);
                     }
                 }
-                if(is_array($colBrakes) || is_object($colBrakes)){
-                if (count($colBrakes) && $colBrakes[$counter]['colbrake']) {
-                    $html .= '</ul></li><li><ul>';
-                }
+                if (is_array($colBrakes) || is_object($colBrakes)) {
+                    if (count($colBrakes) && $colBrakes[$counter]['colbrake']) {
+                        $html .= '</ul></li><li><ul>';
+                    }
                 }
                 $html .= '<li>';
 
@@ -438,36 +465,46 @@ class Topmega extends Topmenu {
                     }
                     if ($category->getCategoryIsLink()) {
                         $html .= '<a href="' . $child->getUrl() . '" ' . $outermostClassCode . '>';
-                    }else{
+                    } else {
                         $html .= '<a ' . $outermostClassCode . '>';
                     }
                     $html .= '<span>' . $this->escapeHtml(
-                                    $name
-                            ) . '</span>';
-                        $html .= '</a>';
+                        $name
+                    ) . '</span>';
+                    $html .= '</a>';
 
 
-                    $html .= $this->_addSubMenu2($child, $childLevel, $childrenWrapClass, $limit
-                            ) . '</li>';
+                    $html .= $this->_addSubMenu(
+                        $child,
+                        $childLevel,
+                        $childrenWrapClass,
+                        $limit
+                    ) . '</li>';
                 } else {
                     $html .= '<a href="' . $child->getUrl() . '" ' . $outermostClassCode . '><span>' . $this->escapeHtml(
-                                    $child->getName()
-                            ) . '</span></a>' . $this->_addSubMenu2(
-                                    $child, $childLevel, $childrenWrapClass, $limit
-                            ) . '</li>';
+                        $child->getName()
+                    ) . '</span></a>' . $this->_addSubMenu(
+                        $child,
+                        $childLevel,
+                        $childrenWrapClass,
+                        $limit
+                    ) . '</li>';
                 }
                 $itemPosition++;
                 $counter++;
             }
-            if(is_array($colBrakes) || is_object($colBrakes)){
-            if (count($colBrakes) && $limit) {
-                $html = '<li class="column"><ul>' . $html . '</ul></li>';
-            }
+            if (is_array($colBrakes) || is_object($colBrakes)) {
+                if (count($colBrakes) && $limit) {
+                    $html = '<li class="column"><ul>' . $html . '</ul></li>';
+                }
             }
             return $html;
         } else {
             return parent::_getHtml(
-                            $menuTree, $childrenWrapClass, $limit, $colBrakes
+                $menuTree,
+                $childrenWrapClass,
+                $limit,
+                $colBrakes
             );
         }
     }
@@ -480,11 +517,13 @@ class Topmega extends Topmenu {
      * @param int $limit
      * @return string
      */
-    public function getHtml($outermostClass = '', $childrenWrapClass = '', $limit = 0) {
+    public function getHtml($outermostClass = '', $childrenWrapClass = '', $limit = 0)
+    {
         if ($childrenWrapClass == "mega") {
             $childrenWrapClass = "submenu";
             $this->_eventManager->dispatch(
-                    'page_block_html_topmenu_gethtml_before', ['menu' => $this->_menu, 'block' => $this]
+                'page_block_html_topmenu_gethtml_before',
+                ['menu' => $this->_menu, 'block' => $this]
             );
 
             $this->_menu->setOutermostClass($outermostClass);
@@ -494,7 +533,8 @@ class Topmega extends Topmenu {
 
             $transportObject = new \Magento\Framework\DataObject(['html' => $html]);
             $this->_eventManager->dispatch(
-                    'page_block_html_topmenu_gethtml_after', ['menu' => $this->_menu, 'transportObject' => $transportObject]
+                'page_block_html_topmenu_gethtml_after',
+                ['menu' => $this->_menu, 'transportObject' => $transportObject]
             );
             $html = $transportObject->getHtml();
             return $html;
@@ -502,7 +542,18 @@ class Topmega extends Topmenu {
             return parent::getHtml($outermostClass, $childrenWrapClass, $limit);
         }
     }
-    public function allowExtension() {
+    public function allowExtension()
+    {
         return $this->dataHelper->allowExtension();
+    }
+    public function getblocks($categoryid)
+    {
+        $collection = $this->collectionFactory->create()->addAttributeToSelect('static_block_top_value')->addAttributeToFilter('entity_id', ['eq' => $categoryid]);
+        return $collection->getFirstItem()->getData('static_block_top_value');
+    }
+    public function getCmsblock($blockid)
+    {
+        $html = $this->block->setBlockId($blockid)->toHtml();
+        return $html;
     }
 }
