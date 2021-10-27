@@ -6,7 +6,7 @@
         </tab>
         <section id="carritoajax" translate="label" type="text" sortOrder="42" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
-            <label>TCarrito</label>
+            <label>ACarrito</label>
             <tab>Omnipro_config</tab>
             <resource>Omnipro_Carritoajax::carritoajax</resource>  
             <group id="general" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">

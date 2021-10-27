@@ -120,7 +120,7 @@ class Topmega extends Topmenu
     }
 
     /**
-     * Prepare Content HTML
+     * Prepare Contenido HTML
      *
      * @return string
      */
@@ -162,20 +162,22 @@ class Topmega extends Topmenu
             if ($childLevel == 0 && $limit) {
             }
 
+            //Asignacion de bloques para categoria padre
             $category = "";
             if ($childLevel == 0) {
                 $html .= '<ul>';
-                $category = $this->coreRegistry->registry('current_categry_top_level');
+                
+                $category = $this->coreRegistry->registry('category_parent');
                 if ($category != null) {
                     if ($category->getUseStaticBlock()) {
 
                         if ($category->getUseStaticBlockTop() && $category->getStaticBlockTopValue() != "") {
-                            $html .= '<div class="topstatic" >';
+                            $html .= '<div class="topimage" >';
                             $html .= $this->getBlockHtml($category->getStaticBlockTopValue());
                             $html .= '</div>';
                         }
                         if ($category->getUseStaticBlockLeft() && $category->getStaticBlockLeftValue() != "") {
-                            $html .= '<div class="leftstatic" >';
+                            $html .= '<div class="leftimage" >';
                             $html .= $this->getBlockHtml($category->getStaticBlockLeftValue());
                             $html .= '</div>';
                         }
@@ -193,34 +195,35 @@ class Topmega extends Topmenu
                 if ($category != null) {
                     if ($category->getUseStaticBlock()) {
                         if ($category->getUseStaticBlockRight() && $category->getStaticBlockRightValue() != "") {
-                            $html .= '<div class="rightstatic" >';
+                            $html .= '<div class="rightimage" >';
                             $html .= $this->getBlockHtml($category->getStaticBlockRightValue());
                             $html .= '</div>';
                         }
 
                         if ($category->getUseStaticBlockBottom() && $category->getStaticBlockBottomValue() != "") {
-                            $html .= '<div class="bottomstatic" >';
+                            $html .= '<div class="bottomimage" >';
                             $html .= $this->getBlockHtml($category->getStaticBlockBottomValue());
                             $html .= '</div>';
                         }
                     }
                 }
-                // $html .= '<div class="bottomstatic" ></div>';
                 $html .= '</ul>';
-            } 
-            elseif ($childLevel == 1) {
-                $category = $this->coreRegistry->registry('current_categry_top_level');
+                
+                //Asignacion Bloques para subcategorias
+            } elseif ($childLevel == 1) {
+                $category = $this->coreRegistry->registry('category_parent');
                 $subCategories = $category->getChildrenCategories();
                 foreach ($subCategories as $subCategory) {
-                    $this->logger->debug($subCategory->getStaticBlockTopValue());
-                    $this->logger->debug($subCategory->getName());
-                    $this->logger->debug($this->getblocks($subCategory->getId()));
-                    $this->logger->debug($this->getCmsblock($this->getblocks($subCategory->getId())));
-                    $html .= '<div class="topstatic" >';
+                    // $this->logger->debug($subCategory->getStaticBlockTopValue());
+                    // $this->logger->debug($subCategory->getName());
+                     $this->logger->debug($this->getblocks($subCategory->getId()));
+                    // $this->logger->debug($this->getCmsblock($this->getblocks($subCategory->getId())));
+                    $html .= '<div class="topimage" >';
                     $html .= $this->getCmsblock($this->getblocks($subCategory->getId()));
                     $html .= '</div>';
                 }
 
+                //Trae los hijos de las subcategorias
                 if (!$category->getDisabledChildren()) {
                     $html .= '<ul>';
                     $html .= $this->_getHtml($child, $childrenWrapClass, $limit, $colStops);
@@ -230,19 +233,19 @@ class Topmega extends Topmenu
                 if ($category != null) {
                     if ($category->getUseStaticBlock()) {
                         if ($category->getUseStaticBlockRight() && $category->getStaticBlockRightValue() != "") {
-                            $html .= '<div class="rightstatic" >';
+                            $html .= '<div class="rightimage" >';
                             $html .= $this->getBlockHtml($category->getStaticBlockRightValue());
                             $html .= '</div>';
                         }
 
                         if ($category->getUseStaticBlockBottom() && $category->getStaticBlockBottomValue() != "") {
-                            $html .= '<div class="bottomstatic" >';
+                            $html .= '<div class="bottomimage" >';
                             $html .= $this->getBlockHtml($category->getStaticBlockBottomValue());
                             $html .= '</div>';
                         }
                     }
                 }
-                // $html .= '<div class="bottomstatic" ></div>';
+                // $html .= '<div class="bottomimage" ></div>';
 
             } else {
                 $html .= '<ul>';
@@ -295,7 +298,7 @@ class Topmega extends Topmenu
         }
 
         if ($level == 'level1' && count($positionArray) == 3) {
-            $category = $this->coreRegistry->registry('current_categry_top_level');
+            $category = $this->coreRegistry->registry('category_parent');
             if (!is_null($category)) {
                 $classes[] = $category->getLevelColumnCount();
             }
@@ -438,8 +441,8 @@ class Topmega extends Topmenu
                         $category->load($id);
                         $childrenCategoryIds = $category->getChildren($id);
                         // $this->logger->debug("Estas son las categoria", ["llave" => $childrenCategoryIds]);
-                        $this->coreRegistry->unregister('current_categry_top_level');
-                        $this->coreRegistry->register('current_categry_top_level', $category);
+                        $this->coreRegistry->unregister('category_parent');
+                        $this->coreRegistry->register('category_parent', $category);
                     }
                 }
                 if (is_array($colBrakes) || is_object($colBrakes)) {
@@ -451,7 +454,7 @@ class Topmega extends Topmenu
 
                 if ($childLevel == 0) {
                     $name = $child->getName();
-                    $category = $this->coreRegistry->registry('current_categry_top_level');
+                    $category = $this->coreRegistry->registry('category_parent');
                     if ($category != null) {
                         if ($category->getUseLabel()) {
                             if ($category->getLabelValue() != "") {
