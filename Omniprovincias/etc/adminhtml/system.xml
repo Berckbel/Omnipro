@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="omniprovincias" translate="label" sortOrder="10">
+            <label>Omnipro Provincias</label>
+        </tab>
+        <section id="omniprovincias" translate="label" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Omniprovincias</label>
+            <tab>omniprovincias</tab>
+            <resource>Omnipro_Omniprovincias::omniprovincias</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>General Configuration</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Module Enable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key" translate="label" type="obscure" sortOrder="1" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>API Key</label>
+                    <comment><![CDATA[Insert API key for <a href="https://rapidapi.com/Spott/api/spott/" target="_blank">RapidAPI</a>]]></comment>
+                    <validate>required-entry no-whitespace</validate>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="provinces" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Provinces Configuration</label>
+                <field id="country" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Select Country</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\CountryOptions</source_model>
+                </field>
+                <field id="province_button" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Update Provinces</label>
+                    <frontend_model>Omnipro\Omniprovincias\Block\System\Config\ProvinceButton</frontend_model>
+                </field>
+                <field id="installed_countries" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Installed Countries</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\InstalledCountries</source_model>
+                </field>
+                <field id="province_delete" translate="label" type="button" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Delete Province</label>
+                    <frontend_model>Omnipro\Omniprovincias\Block\System\Config\ProvinceDelete</frontend_model>
+                </field>
+                <depends>
+                    <field id="omniprovincias/general/enable">1</field>
+                </depends>
+            </group>
+            <group id="cities" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Cities Configuration</label>
+                <field id="city_country" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Select Country</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\CountryCityOptions</source_model>
+                </field>
+                <field id="city_button" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Update Cities</label>
+                    <frontend_model>Omnipro\Omniprovincias\Block\System\Config\CityButton</frontend_model>
+                </field>
+                <field id="installed_countries_city" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Installed Countries</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\CountryCityInstalled</source_model>
+                </field>
+                <field id="city_delete" translate="label" type="button" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Delete Cities</label>
+                    <frontend_model>Omnipro\Omniprovincias\Block\System\Config\CityDelete</frontend_model>
+                </field>
+                <depends>
+                    <field id="omniprovincias/general/enable">1</field>
+                </depends>
+            </group>
+        </section>
+    </system>
+</config>

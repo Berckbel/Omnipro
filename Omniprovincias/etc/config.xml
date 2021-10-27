@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<config
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <omniprovincias>
+            <general>
+                <enable>0</enable>
+                <api_key></api_key>
+            </general>
+            <provinces>
+                <country></country>
+                <installed_countries></installed_countries>
+            </provinces>
+            <cities>
+                <city_country></city_country>
+            </cities>
+        </omniprovincias>
+    </default>
+</config>

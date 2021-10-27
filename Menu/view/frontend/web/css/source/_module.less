@@ -1,0 +1,326 @@
+& when (@media-common = true) {
+    .navigation {
+        @megamenu-icons-mega__font-name-path: '@{baseDir}Omnipro_Menu/fonts/dosis/Quasimoda-Regular';
+        @megamenu-icons-mega__font-name : 'Quasimoda';
+        .lib-font-face(
+            @family-name:@megamenu-icons-mega__font-name,
+            @font-path: @megamenu-icons-mega__font-name-path,
+            @font-weight: 300,
+            @font-style: normal,
+            @font-display: swap
+            );
+        .menu-mobile {
+            display: none;
+            padding: 20px;
+    
+            &:after {
+                content: "\f394";
+                font-family: @megamenu-icons-mega__font-name;
+                font-size: 2.5rem;
+                padding: 0;
+                float: right;
+                position: relative;
+                top: 50%;
+                transform: translateY(-25%);
+            }
+        }
+        .menu-dropdown-icon {
+            &:before {
+                content: "\f489";
+                font-family: @megamenu-icons-mega__font-name;
+                display: none;
+                cursor: pointer;
+                float: right;
+                padding: 1.5em 2em;
+                background: #fff;
+                color: #333;
+            }
+        }
+    
+        .menu {
+            .column_mega_menu1 {
+                width: 100%;
+            }
+            .column_mega_menu2 {
+                width: 50%;
+            }
+            .column_mega_menu3 {
+                width: 33.333333%;
+            }
+            .column_mega_menu4 {
+                width: 25%;
+            }
+            > ul {
+                margin: 0 auto;
+                width: 100%;
+                list-style: none;
+                padding: 0;
+                position: relative;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: center;
+                &:before,
+                    &:after {
+                    content: "";
+                    display: table;
+                }
+                &:after {
+                    clear: both;
+                }
+                > li {
+                    float: left;
+                    background: #fff;
+                    padding: 0;
+                    margin: 0;
+                    a {
+                        text-decoration: none;
+                        padding: 1.5em 3em;
+                        display: block;
+                    }
+                    &:hover {
+                        background: #fff;                        
+                        border-top: 2px solid #ff0056;
+                        box-shadow: rgba(58, 58, 58, 0.11) 3px 10px 15px;
+                    }
+                    > ul {
+                        display: none;
+                        width: 100%;
+                        background: #fff;
+                        border: 1px solid #f3f3f3;
+                        box-shadow: rgba(58, 58, 58, 0.11) 3px 10px 15px;
+                        border-top: none;                        
+                        padding: 20px;
+                        position: absolute;
+                        z-index: 99;
+                        left: 0;
+                        margin: 0;
+                        list-style: none;
+                        -webkit-box-sizing: border-box;
+                        -moz-box-sizing: border-box;
+                        box-sizing: border-box;
+                        &:before,
+                            &:after {
+                            content: "";
+                            display: table;
+                        }
+                        &:after {
+                            clear: both;
+                        }
+                        > li {
+                            margin: 0;
+                            padding-bottom: 0;
+                            list-style: none;
+                            width: 25%;
+                            background: none;
+                            float: left;                        
+                            a {
+                                color: #575757;
+                                padding: .2em 0;
+                                width: 50%;
+                                display: block;
+                                border-bottom: 1px solid #ccc;
+                                text-transform: uppercase;
+                                margin-left: 50px;
+                                font-size: 14px;
+                                &:hover {
+                                    color: #ff0056;
+                                }
+                            }
+                            > ul {
+                                display: block;
+                                padding: 0;
+                                margin: 10px 0 0;
+                                list-style: none;
+                                -webkit-box-sizing: border-box;
+                                -moz-box-sizing: border-box;
+                                box-sizing: border-box;
+                                &:before,
+                                    &:after {
+                                    content: "";
+                                    display: table;
+                                }
+                                &:after {
+                                    clear: both;
+                                }
+                                > li {
+                                    float: left;
+                                    width: 100%;
+                                    padding: 10px 0;
+                                    margin: 0;
+                                    font-size: .8em;
+                                    a {
+                                        border: 0;
+                                    }
+                                }
+                            }
+                        }
+    
+                        &.normal-sub {
+                            width: 500px;
+                            left: auto;
+                            padding: 10px 20px;
+                            > li {
+                                width: 100%;
+                                a {
+                                    border: 0;
+                                    padding: 1em 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+         }
+        .menu .topimage,.menu .bottomimage {
+            clear: both
+        }
+        .menu .leftimage {
+            float: left;
+            margin-right: 15px;
+        }
+        .menu .rightimage {
+            float: right;
+        }
+
+        .images-subcategory {
+            position: relative;
+            right: 53px;
+        }
+        .name-categories {
+            background: black;
+        }
+    }
+}
+
+
+//
+//  Mobile (styles-m.css)
+//  _____________________________________________
+    
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+    .navigation {
+        .menu-container {
+            width: 100%;
+        }
+        .menu-mobile {
+            display: block;
+        }
+        .menu-dropdown-icon {
+            &:before {
+                display: block;
+            }
+        }
+        .menu {
+            .column_mega_menu1 {
+                width: 100%;
+            }
+            .column_mega_menu2 {
+                width: 100%;
+            }
+            .column_mega_menu3 {
+                width: 100%;
+            }
+            .column_mega_menu4 {
+                width: 100%;
+            }
+            > ul {
+                display: none;
+                > li {
+                    width: 100%;
+                    float: none;
+                    display: block;
+                    a {
+                        padding: 1.5em;
+                        width: 100%;
+                        display: block;
+                    }
+                    > ul {
+                        position: relative;
+                        &.normal-sub {
+                            width: 100%;
+                        }
+                        > li {
+                            float: none;
+                            width: 100%;
+                            margin-top: 20px;
+                            &:first-child {
+                                margin: 0;
+                            }
+                            > ul {
+                                position: relative;
+                                > li {
+                                    float: none;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .show-on-mobile {
+                display: block;
+            }
+        }
+
+        .images-subcategory {
+            position: relative;
+            right: 53px;
+        }
+    
+        .topimage,
+        .bottomimage {
+            display:none;
+        }
+        .leftimage {
+            display:none;
+        }
+        .rightimage {
+            display:none;
+        }  
+        .menu {
+            display: none;
+        }
+        .name-categories {
+            background: black;
+        }
+    }
+}
+
+//
+//  Desktop (style-l.css)
+//  _____________________________________________
+
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+    .navigation {
+        background: #fff;
+
+        .menu > ul > li a {
+            color: #000;
+            font-family: 'Quasimoda';
+            font-size: 16px;            
+            text-align: center;
+            &:active,
+            &:focus,
+            &:hover {
+                color: #ff0056;
+                background: #fff;
+            }
+        }
+        .name-categories {
+            background: black;
+        }
+
+        .images-subcategory {
+            position: relative;
+            right: 53px;
+        }
+    
+        #dm {
+            display: none;
+        }
+        #om {
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,78 @@
+<?php
+
+use Omnipro\Omniprovincias\Block\System\Config\CityButton;
+
+/** @var CityButton $block */
+
+$controller = $block->getCustomUrl();
+try {
+    echo $block->getButtonHtml();
+} catch (\Magento\Framework\Exception\LocalizedException $e) {
+}
+?>
+
+<div id="modal_parent_city"></div>
+
+<script type="text/javascript">
+    (function () {
+        require(["jquery", "Magento_Ui/js/modal/modal"], function ($, modal) {
+            $(document).ready(function ($) {
+                $("#row_omniprovincias_cities_city_button").hide();
+                var country_select = $('#omniprovincias_cities_city_country');
+                country_select.change(function () {
+                    console.log(country_select.val());
+                    $.get(`<?= $block->getCustomUrl(); ?>country/${country_select.val()}`);
+
+                    addedRegion($("#omniprovincias_cities_city_country option:selected").text(), country_select.val());
+                    removedRegion();
+
+                    createModal({
+                        type: 'popup',
+                        responsive: true,
+                        innerScroll: true,
+                        buttons: [{
+                            text: $.mage.__('Continue'),
+                            class: 'citiesLoaded',
+                            click: function () {
+                                this.closeModal();
+                            }
+                        }]
+                    }, modal, "#modal_parent_city");
+                })
+            });
+
+            /**
+             * Add country to the list of Cities that have regions.
+             * @param {string} text
+             * @param {string} value
+             */
+            function addedRegion(text, value) {
+                var element = document.getElementById('omniprovincias_cities_installed_countries_city');
+                element.append(new Option(text, value));
+                var div = $('#modal_parent_city');
+                div.append(document.createTextNode(`Cities for ${text} have been loaded successfully.`))
+            }
+
+            /**
+             * Remove country from the list of Cities without regions.
+             * @return {boolean}
+             */
+            function removedRegion() {
+                var element = document.getElementById('omniprovincias_cities_city_country');
+                element.remove(element.selectedIndex);
+                return true;
+            }
+
+            /**
+             * Create modal with custom options
+             * @param {object} options Options for modal from Magento modal
+             * @param modal Modal default type from Magento
+             * @param {string} parent Id or class of the parent container
+             */
+            function createModal(options = {}, modal, parent) {
+                modal(options, $(parent));
+                $(parent).modal("openModal");
+            }
+        });
+    })();
+</script>
