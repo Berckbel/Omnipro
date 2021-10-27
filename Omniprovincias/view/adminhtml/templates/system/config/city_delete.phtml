@@ -5,7 +5,10 @@ use Omnipro\Omniprovincias\Block\System\Config\CityDelete;
 /** @var CityDelete $block */
 
 $controller = $block->getCustomUrl();
-echo $block->getButtonHtml();
+try {
+    echo $block->getButtonHtml();
+} catch (\Magento\Framework\Exception\LocalizedException $e) {
+}
 ?>
 
 <div id="modal_parent_delete_city"></div>
@@ -16,14 +19,18 @@ echo $block->getButtonHtml();
             $(document).ready(function($) {
                 var delete_button = $("#city_delete");
                 $(delete_button).on('click', function(e) {
-                    var selected_country = $('#omniprovincias_cities_installed_countries_city option:selected');
+                    var selected_country = $('#omniprovincias_cities_installed_countries_city');
 
                     if (selected_country.val()) {
 
                         $.get(`<?= $block->getCustomUrl(); ?>country/${selected_country.val()}`);
 
-                        addedRegion($("#omniprovincias_cities_installed_countries_city option:selected").text(), country_select.val());
-                        removedRegion();
+                        var city_text = $("#omniprovincias_cities_installed_countries_city option:selected").text();
+
+                        if(removedCity()) {
+                            var div = $('#modal_parent_delete_city');
+                            div.append(document.createTextNode(`Regions for ${city_text} have been deleted successfully.`))
+                        }
 
                         createModal({
                             type: 'popup',
@@ -31,7 +38,7 @@ echo $block->getButtonHtml();
                             innerScroll: true,
                             buttons: [{
                                 text: $.mage.__('Continue'),
-                                class: 'regionsLoaded',
+                                class: 'citiesRemoved',
                                 click: function() {
                                     this.closeModal();
                                 }
@@ -42,22 +49,11 @@ echo $block->getButtonHtml();
             });
 
             /**
-             * Add country to the list of Cities that have regions.
-             * @param {string} text
-             * @param {string} value
-             */
-            function addedRegion(text, value) {
-                var element = document.getElementById('omniprovincias_cities_installed_countries_city');
-                var div = $('#modal_parent_delete_city');
-                div.append(document.createTextNode(`Cities for ${text} have been deleted successfully.`))
-            }
-
-            /**
-             * Remove country from the list of Cities without regions.
+             * Remove country from the list of countries without regions.
              * @return {boolean}
              */
-            function removedRegion() {
-                var element = document.getElementById('omniprovincias_cities_city_country');
+            function removedCity() {
+                var element = document.getElementById('omniprovincias_cities_installed_countries_city');
                 element.remove(element.selectedIndex);
                 return true;
             }

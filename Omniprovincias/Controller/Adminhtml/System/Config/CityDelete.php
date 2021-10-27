@@ -36,6 +36,7 @@ class CityDelete extends Action
      * @param ConfigHelper $configHelper
      * @param RegionFactory $regionFactory
      * @param CountryFactory $countryFactory
+     * @param CityFactory $cityFactory
      * @param ManagerInterface $messageManager
      * @param LoggerInterface $logger
      */

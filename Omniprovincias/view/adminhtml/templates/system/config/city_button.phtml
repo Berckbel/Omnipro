@@ -5,7 +5,10 @@ use Omnipro\Omniprovincias\Block\System\Config\CityButton;
 /** @var CityButton $block */
 
 $controller = $block->getCustomUrl();
-echo $block->getButtonHtml();
+try {
+    echo $block->getButtonHtml();
+} catch (\Magento\Framework\Exception\LocalizedException $e) {
+}
 ?>
 
 <div id="modal_parent_city"></div>
@@ -29,7 +32,7 @@ echo $block->getButtonHtml();
                         innerScroll: true,
                         buttons: [{
                             text: $.mage.__('Continue'),
-                            class: 'regionsLoaded',
+                            class: 'citiesLoaded',
                             click: function () {
                                 this.closeModal();
                             }
