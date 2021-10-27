@@ -1,10 +1,17 @@
 <?php
+
 namespace Omnipro\Omniprovincias\Model\ResourceModel;
 
-class City extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
+use Magento\Framework\Model\ResourceModel\Db\Context;
+
+class City extends AbstractDb
 {
+    /**
+     * @param Context $context
+     */
     public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context
+        Context $context
     )
     {
         parent::__construct($context);

@@ -1,7 +1,9 @@
 <?php
 namespace Omnipro\Omniprovincias\Model\ResourceModel\City;
 
-class Collection extends \Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
+class Collection extends AbstractCollection
 {
     protected $_idFieldName = 'city_id';
     protected $_eventPrefix = 'omnipro_omniprovincias_city_collection';

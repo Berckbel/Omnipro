@@ -8,10 +8,10 @@ use Omnipro\Omniprovincias\Helper\ConfigHelper;
 
 class InstalledCountries implements OptionSourceInterface
 {
-    protected $configHelper;
-    protected $regionFactory;
-    protected $countryFactory;
-    public $data;
+    protected ConfigHelper $_configHelper;
+    protected RegionFactory $_regionFactory;
+    protected CountryFactory $_countryFactory;
+    public array $_data;
 
     public function __construct(
         ConfigHelper $configHelper,
@@ -19,23 +19,28 @@ class InstalledCountries implements OptionSourceInterface
         CountryFactory $countryFactory
     )
     {
-        $this->configHelper = $configHelper;
-        $this->regionFactory = $regionFactory;
-        $this->countryFactory = $countryFactory;
+        $this->_configHelper = $configHelper;
+        $this->_regionFactory = $regionFactory;
+        $this->_countryFactory = $countryFactory;
 
-        $this->data = $this->getCountriesWithRegions();
+        $this->_data = $this->getCountriesWithRegions();
     }
 
-    public function toOptionArray()
+    /**
+     * @return array
+     */
+    public function toOptionArray(): array
     {
-        
-        return $this->data;
+        return $this->_data;
     }
 
-    public function getCountriesWithRegions()
+    /**
+     * @return array
+     */
+    public function getCountriesWithRegions(): array
     {
         $result = [];
-        $countries = $this->countryFactory->create();
+        $countries = $this->_countryFactory->create();
         $codes = $this->getCountryCodesInRegions();
         foreach($countries as $country){
             if(in_array($country->getData('country_id'), $codes)){
@@ -45,14 +50,17 @@ class InstalledCountries implements OptionSourceInterface
         return $result;
     }
 
-    public function getCountryCodesInRegions(){
+    /**
+     * @return array
+     */
+    public function getCountryCodesInRegions(): array
+    {
         $result = [];
-        $regions = $this->regionFactory->create();
+        $regions = $this->_regionFactory->create();
         foreach($regions as $region){
             $result[] = $region->getData('country_id');
         }
-        $result = array_unique($result);
-        return $result;
+        return array_unique($result);
     }
 
 }

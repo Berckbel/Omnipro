@@ -40,6 +40,7 @@ class CityButton extends Action
      * @param ConfigHelper $configHelper
      * @param RegionFactory $regionFactory
      * @param CountryFactory $countryFactory
+     * @param CityFactory $cityFactory
      * @param ManagerInterface $messageManager
      * @param LoggerInterface $logger
      */
@@ -131,7 +132,7 @@ class CityButton extends Action
     }
 
     /**
-     * @param array $regions
+     * @param array $cities
      * @throws Exception
      */
     public function setCities(array $cities)
@@ -149,13 +150,16 @@ class CityButton extends Action
         }
     }
 
-    public function getCodesInCity(){
+    /**
+     * @return array
+     */
+    public function getCodesInCity(): array
+    {
         $result = [];
         $cities = $this->_cityFactory->create()->getCollection();
         foreach($cities as $city){
             $result[] = $city->getData('code');
         }
-        $result = array_unique($result);
-        return $result;
+        return array_unique($result);
     }
 }

@@ -8,12 +8,12 @@ use Magento\Framework\Data\OptionSourceInterface;
 use Omnipro\Omniprovincias\Helper\ConfigHelper;
 
 class CountryCityOptions implements OptionSourceInterface
-{    
-    protected $configHelper;
-    protected $regionFactory;
-    protected $countryFactory;
-    protected $cityFactory;
-    public $data;
+{
+    protected ConfigHelper $_configHelper;
+    protected RegionFactory $_regionFactory;
+    protected CountryFactory $_countryFactory;
+    protected CityFactory $_cityFactory;
+    public array $_data;
 
     public function __construct(
         ConfigHelper $configHelper,
@@ -22,24 +22,29 @@ class CountryCityOptions implements OptionSourceInterface
         CityFactory $cityFactory
     )
     {
-        $this->configHelper = $configHelper;
-        $this->regionFactory = $regionFactory;
-        $this->countryFactory = $countryFactory;
-        $this->cityFactory = $cityFactory;
+        $this->_configHelper = $configHelper;
+        $this->_regionFactory = $regionFactory;
+        $this->_countryFactory = $countryFactory;
+        $this->_cityFactory = $cityFactory;
 
-        $this->data = $this->getCountriesWithoutCity();
+        $this->_data = $this->getCountriesWithoutCity();
     }
 
-    public function toOptionArray()
+    /**
+     * @return array
+     */
+    public function toOptionArray(): array
     {
-        
-        return $this->data;
+        return $this->_data;
     }
 
-    public function getCountriesWithoutCity()
+    /**
+     * @return array
+     */
+    public function getCountriesWithoutCity(): array
     {
         $result = [];
-        $countries = $this->countryFactory->create();
+        $countries = $this->_countryFactory->create();
         $codes = $this->getCountryCodesInCity();
         foreach($countries as $country){
             if(!in_array($country->getData('country_id'), $codes)){
@@ -49,13 +54,16 @@ class CountryCityOptions implements OptionSourceInterface
         return $result;
     }
 
-    public function getCountryCodesInCity(){
+    /**
+     * @return array
+     */
+    public function getCountryCodesInCity(): array
+    {
         $result = [];
-        $cities = $this->cityFactory->create();
+        $cities = $this->_cityFactory->create();
         foreach($cities as $city){
             $result[] = $city->getData('country_code');
         }
-        $result = array_unique($result);
-        return $result;
+        return array_unique($result);
     }
 }
