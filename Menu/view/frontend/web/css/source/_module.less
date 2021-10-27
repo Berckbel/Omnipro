@@ -59,6 +59,8 @@
                 -webkit-box-sizing: border-box;
                 -moz-box-sizing: border-box;
                 box-sizing: border-box;
+                display: flex;
+                justify-content: center;
                 &:before,
                     &:after {
                     content: "";
@@ -181,6 +183,14 @@
         .menu .rightimage {
             float: right;
         }
+
+        .images-subcategory {
+            position: relative;
+            right: 53px;
+        }
+        .name-categories {
+            background: black;
+        }
     }
 }
 
@@ -252,6 +262,11 @@
                 display: block;
             }
         }
+
+        .images-subcategory {
+            position: relative;
+            right: 53px;
+        }
     
         .topimage,
         .bottomimage {
@@ -265,6 +280,9 @@
         }  
         .menu {
             display: none;
+        }
+        .name-categories {
+            background: black;
         }
     }
 }
@@ -280,13 +298,22 @@
         .menu > ul > li a {
             color: #000;
             font-family: 'Quasimoda';
-            font-size: 16px;
+            font-size: 16px;            
+            text-align: center;
             &:active,
             &:focus,
             &:hover {
                 color: #ff0056;
                 background: #fff;
             }
+        }
+        .name-categories {
+            background: black;
+        }
+
+        .images-subcategory {
+            position: relative;
+            right: 53px;
         }
     
         #dm {
