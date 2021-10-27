@@ -42,6 +42,24 @@
                     <field id="omniprovincias/general/enable">1</field>
                 </depends>
             </group>
+            <group id="cities" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Cities Configuration</label>
+                <field id="city_country" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Select Country</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\CountryCityOptions</source_model>
+                </field>
+                <field id="city_button" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Update Cities</label>
+                    <frontend_model>Omnipro\Omniprovincias\Block\System\Config\CityButton</frontend_model>
+                </field>
+                <field id="installed_countries_city" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Installed Countries</label>
+                    <source_model>Omnipro\Omniprovincias\Model\Config\Source\CountryCityInstalled</source_model>
+                </field>
+                <depends>
+                    <field id="omniprovincias/general/enable">1</field>
+                </depends>
+            </group>
         </section>
     </system>
 </config>

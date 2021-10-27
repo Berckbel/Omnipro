@@ -12,6 +12,9 @@
                 <country></country>
                 <installed_countries></installed_countries>
             </provinces>
+            <cities>
+                <city_country></city_country>
+            </cities>
         </omniprovincias>
     </default>
 </config>
