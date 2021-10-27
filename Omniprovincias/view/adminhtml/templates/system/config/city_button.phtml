@@ -1,5 +1,9 @@
 <?php
 
+use Omnipro\Omniprovincias\Block\System\Config\CityButton;
+
+/** @var CityButton $block */
+
 $controller = $block->getCustomUrl();
 echo $block->getButtonHtml();
 ?>
@@ -40,7 +44,7 @@ echo $block->getButtonHtml();
              * @param {string} value
              */
             function addedRegion(text, value) {
-                var element = document.getElementById('omniprovincias_cities_installed_Cities_city');
+                var element = document.getElementById('omniprovincias_cities_installed_countries_city');
                 element.append(new Option(text, value));
                 var div = $('#modal_parent_city');
                 div.append(document.createTextNode(`Cities for ${text} have been loaded successfully.`))

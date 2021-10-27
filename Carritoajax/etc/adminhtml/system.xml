@@ -6,9 +6,13 @@
         </tab>
         <section id="carritoajax" translate="label" type="text" sortOrder="42" showInDefault="1" showInWebsite="1" showInStore="1">
             <class>separator-top</class>
+<<<<<<< HEAD
+            <label>Carrito</label>
+=======
             <label>ACarrito</label>
+>>>>>>> d4d8defd9a48df79f6118f5f1dc028538664c23e
             <tab>Omnipro_config</tab>
-            <resource>Omnipro_Carritoajax::carritoajax</resource>  
+            <resource>Omnipro_Carritoajax::carritoajax</resource>
             <group id="general" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
                 <comment></comment>
